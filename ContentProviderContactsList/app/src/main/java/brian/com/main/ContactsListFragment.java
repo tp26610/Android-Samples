@@ -1,7 +1,11 @@
 package brian.com.main;
 
+import android.content.ContentUris;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.provider.ContactsContract;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +53,15 @@ public class ContactsListFragment extends Fragment {
                         "photoThumbnailUri = " + item.getPhotoThumbnailUri();
 
                 Toast.makeText(getActivity(), itemString, Toast.LENGTH_SHORT).show();
+
+                // query contacts detail information.
+                Uri contactUri = getLookupUri(item.getId(), item.getLookupKey());
+
+
+                // start activity to display detail information.
+                Intent intent = new Intent(getActivity(), ContactsDetailActivity.class);
+                intent.putExtra(ContactsDetailActivity.EXTRA_CONTACT_ID, item.getId());
+                getActivity().startActivity(intent);
             }
         });
     }
@@ -59,5 +72,12 @@ public class ContactsListFragment extends Fragment {
 
         adapter.closeCursor();
 
+    }
+
+
+    public static Uri getLookupUri(long contactId, String lookupKey) {
+        return ContentUris.withAppendedId(
+                Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey),
+                contactId);
     }
 }
