@@ -1,7 +1,6 @@
 package brian.com.main;
 
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
@@ -41,6 +40,7 @@ public class ContactsDetailActivity extends ActionBarActivity {
         String contactDetailString = null;
         StringBuffer contactStringBuffer = new StringBuffer();
         c.moveToFirst();
+
         do {
             int idIndex = c.getColumnIndex(ContactsContract.Data._ID);
             int phoneNumberIndex = c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
@@ -78,10 +78,9 @@ public class ContactsDetailActivity extends ActionBarActivity {
         String selection = ContactsContract.Data.CONTACT_ID + "=?" + " AND "
                 + ContactsContract.Data.MIMETYPE + "='"
                     + ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE + "' AND "
-                + ContactsContract.CommonDataKinds.Phone.NUMBER + " <> '' ";
+                + ContactsContract.CommonDataKinds.Phone.NUMBER + " <> ''";
 
         String[] selectionArgs = new String[] { String.valueOf(contactId) };
-
 
         Cursor c = getContentResolver().query(
                 ContactsContract.Data.CONTENT_URI,

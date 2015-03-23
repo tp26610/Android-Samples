@@ -5,14 +5,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Yeh on 2015/3/20.
@@ -32,7 +31,9 @@ public class ContactsListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return mCursor.getCount();
+        int count = mCursor.getCount();
+        Log.d("ContactsListAdapter", "getCount() = " + count);
+        return count;
     }
 
     @Override
@@ -71,6 +72,7 @@ public class ContactsListAdapter extends BaseAdapter {
             convertView = mInflater.inflate(R.layout.contacts_list_item, null, false);
             viewHolder = new ViewHolder();
             viewHolder.tvDisplayName = (TextView) convertView.findViewById(R.id.textView);
+            viewHolder.ivPhoto = (ImageView) convertView.findViewById(R.id.imageView_thumbnail);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -79,6 +81,12 @@ public class ContactsListAdapter extends BaseAdapter {
         Item item = (Item) getItem(position);
 
         viewHolder.tvDisplayName.setText(item.getDisplayNamePrimary());
+        String uriString = item.getPhotoThumbnailUri();
+
+        if(uriString != null)
+            viewHolder.ivPhoto.setImageURI(Uri.parse(uriString));
+        else
+            viewHolder.ivPhoto.setImageResource(R.drawable.ic_contact_picture_holo_light);
 
         return convertView;
     }
@@ -98,7 +106,8 @@ public class ContactsListAdapter extends BaseAdapter {
         };
 
         String selection = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY +
-                "<>''" + " AND " + ContactsContract.Contacts.IN_VISIBLE_GROUP + "=1";
+                "<>''" + " AND " + ContactsContract.Contacts.IN_VISIBLE_GROUP + "=1 AND " +
+                ContactsContract.Contacts.HAS_PHONE_NUMBER + "=1";
 
         String sortOrder = ContactsContract.Contacts.SORT_KEY_PRIMARY;
 
@@ -110,6 +119,7 @@ public class ContactsListAdapter extends BaseAdapter {
 
     private class ViewHolder {
         TextView tvDisplayName;
+        ImageView ivPhoto;
     }
 
     public class Item {
