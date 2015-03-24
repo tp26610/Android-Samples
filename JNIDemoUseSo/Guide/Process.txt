@@ -1,0 +1,10 @@
+This sample demo how to use a existence .so file for jni.
+
+
+1. new a folder named 'jniLibs' in '<project>/src/main'
+
+2. put .so files and ABI version to 'jniLibs'
+    e.g.: 'jniLibs/armeabi/libMyLib.so'
+
+3. use the jni method for test
+    (please see the ApplicationTest.java)
