@@ -1,0 +1,30 @@
+1. create a java class for jni
+    new a 'Jni' class in '<project>/app/src/main/java/<packageNmae>'
+
+2. Use javah from Consle to generate jni .h file.
+    (a) Chagne working directory:
+        cd <project>/app/src/main
+    (b) Use javah to generate jni .h file.
+        java -d jni -classpath <android.jar dir>;<.class file dir> <packageName>.<className>
+     e.g.:
+        javah -d jni -classpath E:\Android\android-sdk\platforms\android-21\android.jar;..\..\build\intermediates\classes\debug brian.com.jnidemowithgradle.Jni
+
+    (c) check directory '/main/jni'. You will see the .h file.
+
+3. new a '.c' file in jni folder. (e.g. main.c)
+    (a) implement the 'getStringFromNative' method.
+
+4. new a utils.c file which is an empty file.
+
+5. add NDK path to '<project>/local.properties'
+    (a) add line:
+        'ndk.dir=E\:\\Android\\android-ndk-r10d'
+
+6. add script in build.gradle(app) in 'defaultConfig{...}' block
+    (a) add:
+        ndk {
+            module "MyLib"
+        }
+7. Add 'static { System.loadLibrary("MyLib"); }' to Jni class
+
+8. Make project and use the jni method.
