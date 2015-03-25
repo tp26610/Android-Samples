@@ -1,0 +1,9 @@
+I prepare a hello-jar to demonstrate how to use external .jar file.
+This jar library include a class 'Jar'.
+It has a method named 'getStringFromJar()' will return a String "Hello world From JAR !".
+
+ 1. Put .jar to '<project>/app/libs'.
+ 2. Right click it and hit 'Add as Library'.
+ 3. Ensure that 'compile files('libs/hello-jar.jar')' is in your build.gradle(app).
+ 4. Do a clean build.
+ 5. To see ApplicationTest where function 'testUseJar()' show the result.
