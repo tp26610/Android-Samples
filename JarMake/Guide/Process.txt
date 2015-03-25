@@ -1,0 +1,36 @@
+1. Configurate build.gradle for build .jar.
+    (1) replace :
+        apply plugin: 'com.android.application'
+        to :
+        apply plugin: 'com.android.library'
+
+    (2) delete following elements in defaultConfig block:
+        applicationId ...
+        versionCode ...
+        versionName ...
+
+    (3) add following code to build.gradle :
+
+        task clearJar(type: Delete) {
+            delete 'build/outputs/yourname.jar'
+        }
+
+        task makeJar(type: Copy) {
+            from('build/intermediates/bundles/release/')
+            into('build/outputs/')
+            include('classes.jar')
+            rename ('classes.jar', 'yourname.jar')
+        }
+
+        makeJar.dependsOn(clearJar, build)
+
+    (4) Use Terminal to make jar file:
+        cd <project>
+        gradlew makeJar
+
+        While executing gradlew at first time, you will start downloading some files.
+        After that, please execute 'gradlew makeJar' again.
+
+    (5) You will see the 'yourname.jar' in '<project>/app/build/outputs'.
+        Open it with zip and delete the unrelational .class files.
+
