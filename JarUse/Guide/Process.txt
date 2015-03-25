@@ -7,3 +7,7 @@ It has a method named 'getStringFromJar()' will return a String "Hello world Fro
  3. Ensure that 'compile files('libs/hello-jar.jar')' is in your build.gradle(app).
  4. Do a clean build.
  5. To see ApplicationTest where function 'testUseJar()' show the result.
+
+Method 2:
+ 1. Put .jar to '<project>/app/libs'.
+ 2. Click Build>Rebuild Project
