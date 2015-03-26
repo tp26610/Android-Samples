@@ -23,3 +23,6 @@ Export .jar with AndroidStudio.
 
 # JarUse
 Use a existence .jar file.
+
+# RemoteServiceAidl
+Show how to communicate Remote Service via AIDL.
