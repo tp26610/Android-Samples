@@ -150,13 +150,13 @@ public class ContactsListAdapter extends CursorAdapter
         String[] projection = {
                 ContactsContract.Contacts._ID,
                 ContactsContract.Contacts.LOOKUP_KEY,
-                ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
+                ContactsContract.Contacts.DISPLAY_NAME,
                 ContactsContract.Contacts.PHOTO_THUMBNAIL_URI,
                 ContactsContract.Contacts.SORT_KEY_PRIMARY
         };
 
-        String selection = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY +
-                "<>''" + " AND " + ContactsContract.Contacts.IN_VISIBLE_GROUP + "=1 AND " +
+        String selection = ContactsContract.Contacts.DISPLAY_NAME +
+                "<>''" + " AND " +
                 ContactsContract.Contacts.HAS_PHONE_NUMBER + "=1";
 
         String sortOrder = ContactsContract.Contacts.SORT_KEY_PRIMARY;
