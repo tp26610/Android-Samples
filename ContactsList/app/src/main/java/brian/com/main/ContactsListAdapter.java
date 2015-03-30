@@ -4,48 +4,85 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
  * Created by Yeh on 2015/3/20.
  */
-public class ContactsListAdapter extends BaseAdapter {
+public class ContactsListAdapter extends CursorAdapter
+        implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private Cursor mCursor;
+
     private LayoutInflater mInflater;
-    private ContentResolver mResolver;
+    private Context mContext;
 
 
-    public ContactsListAdapter(Context context) {
-        mResolver = context.getContentResolver();
-        mInflater = LayoutInflater.from(context);
-        mCursor = queryContacts();
+    private class ViewHolder {
+        TextView tvDisplayName;
+        ImageView ivPhoto;
     }
 
-    @Override
-    public int getCount() {
-        int count = mCursor.getCount();
-        Log.d("ContactsListAdapter", "getCount() = " + count);
-        return count;
+    public class Item {
+
+        long id;
+        String lookupKey;
+        String displayNamePrimary;
+        String photoThumbnailUri;
+        String sortKeyPrimary;
+
+        public String getLookupKey() {
+            trace("getLookupKey");
+            return lookupKey;
+        }
+
+        public long getId() {
+            trace("getId");
+            return id;
+        }
+
+        public String getDisplayNamePrimary() {
+            trace("getDisplayNamePrimary");
+            return displayNamePrimary;
+        }
+
+        public String getPhotoThumbnailUri() {
+            trace("getPhotoThumbnailUri");
+            return photoThumbnailUri;
+        }
+
+        public String getSortKeyPrimary() {
+            trace("getSortKeyPrimary");
+            return sortKeyPrimary;
+        }
+
+
     }
 
-    @Override
-    public Object getItem(int position) {
+    private void trace(String log) {
+        Log.d("ContactsListAdapter", log);
+    }
 
-        mCursor.moveToPosition(position);
+    private Item cursorToItem(Cursor cursor) {
 
-        long _id = mCursor.getLong(0);
-        String lookupKey = mCursor.getString(1);
-        String displayNamePrimary = mCursor.getString(2);
-        String photoThumbnailUri = mCursor.getString(3);
-        String sortKeyPrimary = mCursor.getString(4);
+        trace("cursorToItem");
+
+        long _id = cursor.getLong(0);
+        String lookupKey = cursor.getString(1);
+        String displayNamePrimary = cursor.getString(2);
+        String photoThumbnailUri = cursor.getString(3);
+        String sortKeyPrimary = cursor.getString(4);
 
         Item item = new Item();
         item.id = _id;
@@ -57,46 +94,58 @@ public class ContactsListAdapter extends BaseAdapter {
         return item;
     }
 
-    @Override
-    public long getItemId(int position) {
-        mCursor.moveToPosition(position);
-        return mCursor.getLong(0);
+    public ContactsListAdapter(Context context) {
+        super(context, null, 0);
+
+
+        trace("ContactsListAdapter");
+        mInflater = LayoutInflater.from(context);
+        mContext = context;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
 
+        trace("newView dataCount = " + cursor.getCount());
+
+        View itemView;
         ViewHolder viewHolder;
 
-        if(convertView == null) {
-            convertView = mInflater.inflate(R.layout.contacts_list_item, null, false);
-            viewHolder = new ViewHolder();
-            viewHolder.tvDisplayName = (TextView) convertView.findViewById(R.id.textView);
-            viewHolder.ivPhoto = (ImageView) convertView.findViewById(R.id.imageView_thumbnail);
-            convertView.setTag(viewHolder);
+        itemView = mInflater.inflate(R.layout.contacts_list_item, null, false);
+        viewHolder = new ViewHolder();
+        viewHolder.tvDisplayName = (TextView) itemView.findViewById(R.id.textView);
+        viewHolder.ivPhoto = (ImageView) itemView.findViewById(R.id.imageView_thumbnail);
+        itemView.setTag(viewHolder);
+
+
+        return itemView;
+    }
+
+    @Override
+    public void bindView(View view, Context context, Cursor cursor) {
+        trace("bindView");
+
+        final ViewHolder viewHolder = (ViewHolder) view.getTag();
+
+        Item item = cursorToItem(cursor);
+
+        refreshUI(viewHolder,
+                item.getDisplayNamePrimary(),
+                item.getPhotoThumbnailUri());
+    }
+
+    private void refreshUI(ViewHolder viewHolder, String displayName, String photoThumbnailUri) {
+        viewHolder.tvDisplayName.setText(displayName);
+        if(photoThumbnailUri != null) {
+            viewHolder.ivPhoto.setImageURI(Uri.parse(photoThumbnailUri));
         } else {
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
-
-        Item item = (Item) getItem(position);
-
-        viewHolder.tvDisplayName.setText(item.getDisplayNamePrimary());
-        String uriString = item.getPhotoThumbnailUri();
-
-        if(uriString != null)
-            viewHolder.ivPhoto.setImageURI(Uri.parse(uriString));
-        else
             viewHolder.ivPhoto.setImageResource(R.drawable.ic_contact_picture_holo_light);
-
-        return convertView;
+        }
     }
 
-    public void closeCursor() {
-        mCursor.close();
-    }
-
-    private Cursor queryContacts() {
-
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        trace("onCreateLoader");
         String[] projection = {
                 ContactsContract.Contacts._ID,
                 ContactsContract.Contacts.LOOKUP_KEY,
@@ -114,43 +163,33 @@ public class ContactsListAdapter extends BaseAdapter {
 
         Uri uri = ContactsContract.Contacts.CONTENT_URI;
 
-        return mResolver.query(uri, projection, selection, null, sortOrder);
+        return new CursorLoader(
+                mContext,
+                uri,
+                projection,
+                selection,
+                null,
+                sortOrder);
     }
 
-    private class ViewHolder {
-        TextView tvDisplayName;
-        ImageView ivPhoto;
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        trace("onLoadFinished");
+        this.swapCursor(data);
     }
 
-    public class Item {
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        trace("onLoaderReset");
+        this.swapCursor(null);
+    }
 
-        long id;
-        String lookupKey;
-        String displayNamePrimary;
-        String photoThumbnailUri;
-        String sortKeyPrimary;
-
-        public String getLookupKey() {
-            return lookupKey;
-        }
-
-        public long getId() {
-            return id;
-        }
-
-        public String getDisplayNamePrimary() {
-            return displayNamePrimary;
-        }
-
-        public String getPhotoThumbnailUri() {
-            return photoThumbnailUri;
-        }
-
-        public String getSortKeyPrimary() {
-            return sortKeyPrimary;
-        }
-
-
+    @Override
+    public Object getItem(int position) {
+        trace("getItem");
+        Cursor cursor = (Cursor) super.getItem(position);
+        Item item = cursorToItem(cursor);
+        return item;
     }
 
 }

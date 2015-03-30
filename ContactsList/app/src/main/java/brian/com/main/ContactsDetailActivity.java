@@ -46,17 +46,20 @@ public class ContactsDetailActivity extends ActionBarActivity {
             int phoneNumberIndex = c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
             int phoneTypeIndex = c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE);
             int phoneLabelIndex = c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.LABEL);
+            int normalizedNumberIndex = c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER);
 
             long id = c.getLong(idIndex);
             String phoneNumber = c.getString(phoneNumberIndex);
             int phoneType = c.getInt(phoneTypeIndex);
             String phoneLabel = c.getString(phoneLabelIndex);
+            String normalizedNumber = c.getString(normalizedNumberIndex);
 
 
             contactStringBuffer.append("id = " + id + "\r\n" +
                     "phoneNumber = " + phoneNumber + "\r\n" +
                     "phoneType = " + phoneType + "\r\n" +
-                    "phoneLabel = " + phoneLabel + "\r\n"
+                    "phoneLabel = " + phoneLabel + "\r\n" +
+                    "normalizedNumber = " + normalizedNumber + "\r\n"
             );
             contactStringBuffer.append("\r\n");
 
@@ -72,7 +75,8 @@ public class ContactsDetailActivity extends ActionBarActivity {
                 ContactsContract.Data._ID,
                 ContactsContract.CommonDataKinds.Phone.NUMBER,
                 ContactsContract.CommonDataKinds.Phone.TYPE,
-                ContactsContract.CommonDataKinds.Phone.LABEL
+                ContactsContract.CommonDataKinds.Phone.LABEL,
+                ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER
         };
 
         String selection = ContactsContract.Data.CONTACT_ID + "=?" + " AND "

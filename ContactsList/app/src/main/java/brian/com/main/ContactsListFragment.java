@@ -1,6 +1,9 @@
 package brian.com.main;
 
+import android.app.LoaderManager;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -57,13 +60,12 @@ public class ContactsListFragment extends Fragment {
                 getActivity().startActivity(intent);
             }
         });
+        getLoaderManager().initLoader(0, null, adapter);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
-        adapter.closeCursor();
 
     }
 }
