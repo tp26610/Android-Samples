@@ -24,6 +24,7 @@ import android.widget.TextView;
 public class ContactsListAdapter extends CursorAdapter
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final boolean DEBUG = true;
 
     private LayoutInflater mInflater;
     private Context mContext;
@@ -71,7 +72,7 @@ public class ContactsListAdapter extends CursorAdapter
     }
 
     private void trace(String log) {
-        Log.d("ContactsListAdapter", log);
+        if(DEBUG) Log.d("ContactsListAdapter", log);
     }
 
     private Item cursorToItem(Cursor cursor) {
@@ -106,7 +107,7 @@ public class ContactsListAdapter extends CursorAdapter
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
 
-        trace("newView dataCount = " + cursor.getCount());
+        trace("newView dataCount = " + cursor.getCount() + " position = " + cursor.getPosition());
 
         View itemView;
         ViewHolder viewHolder;
@@ -123,7 +124,7 @@ public class ContactsListAdapter extends CursorAdapter
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        trace("bindView");
+        trace("bindView  dataCount = " + cursor.getCount() + " position = " + cursor.getPosition());
 
         final ViewHolder viewHolder = (ViewHolder) view.getTag();
 
