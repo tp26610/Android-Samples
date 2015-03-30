@@ -26,7 +26,7 @@ public class MainService extends Service {
 
         trace("onCreate");
 
-        
+
     }
 
     @Override

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ContentProviderContactsReadProfile.iml" filepath="$PROJECT_DIR$/ContentProviderContactsReadProfile.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ContactsReadProfile.iml" filepath="$PROJECT_DIR$/ContactsReadProfile.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
