@@ -18,13 +18,21 @@ import android.widget.TextView;
  */
 public class ContactsListAdapter extends BaseAdapter {
 
+    private static final boolean DEBUG = true;
+
     private Cursor mCursor;
     private LayoutInflater mInflater;
     private ContentResolver mResolver;
     private int dataCount;
 
+    private void trace(String message) {
+        if(DEBUG)
+            Log.d("ContactsListAdapter", message);
+    }
 
     public ContactsListAdapter(Context context) {
+        trace("ContactListAdapter");
+
         mResolver = context.getContentResolver();
         mInflater = LayoutInflater.from(context);
 
@@ -39,11 +47,14 @@ public class ContactsListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
+        trace("getCount");
         return dataCount;
     }
 
     @Override
     public Object getItem(int position) {
+
+        trace("getItem");
 
         mCursor.moveToPosition(position);
 
@@ -51,31 +62,41 @@ public class ContactsListAdapter extends BaseAdapter {
         int displayNameIndex = mCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
         int phoneNumberIndex = mCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
         int photoThumbnailUriIndex = mCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI);
+        int labelIndex = mCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.LABEL);
+        int lookupKeyIndex = mCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY);
 
 
         long _id = mCursor.getLong(idIndex);
         String displayName = mCursor.getString(displayNameIndex);
         String phoneNumber = mCursor.getString(phoneNumberIndex);
         String photoThumbnailUri = mCursor.getString(photoThumbnailUriIndex);
+        String label = mCursor.getString(labelIndex);
+        String lookupKey = mCursor.getString(lookupKeyIndex);
 
         Item item = new Item();
         item.id = _id;
         item.displayName = displayName;
         item.phoneNumber = phoneNumber;
         item.photoThumbnailUri = photoThumbnailUri;
+        item.label = label;
+        item.lookupKey = lookupKey;
+
+        trace(item.toString());
 
         return item;
     }
 
     @Override
     public long getItemId(int position) {
+        trace("getItemId");
+
         mCursor.moveToPosition(position);
         return mCursor.getLong(0);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
+        trace("getView");
         ViewHolder viewHolder;
 
         if(convertView == null) {
@@ -104,16 +125,19 @@ public class ContactsListAdapter extends BaseAdapter {
     }
 
     public void closeCursor() {
+        trace("closeCursor");
         mCursor.close();
     }
 
     private Cursor queryContacts() {
-
+        trace("queryContacts");
         String[] projection = {
                 ContactsContract.CommonDataKinds.Phone._ID,
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
                 ContactsContract.CommonDataKinds.Phone.NUMBER,
                 ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI,
+                ContactsContract.CommonDataKinds.Phone.LABEL,
+                ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY
         };
 
         String selection = ContactsContract.CommonDataKinds.Phone.HAS_PHONE_NUMBER + "=1";
@@ -121,8 +145,6 @@ public class ContactsListAdapter extends BaseAdapter {
         String sortOrder = ContactsContract.CommonDataKinds.Phone.SORT_KEY_PRIMARY;
 
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
-
-
 
         return mResolver.query(uri, projection, selection, null, sortOrder);
     }
@@ -139,24 +161,55 @@ public class ContactsListAdapter extends BaseAdapter {
         String displayName;
         String phoneNumber;
         String photoThumbnailUri;
+        String label;
+        String lookupKey;
 
         public long getId() {
+            trace("getId");
             return id;
         }
 
         public String getDisplayName() {
+            trace("getDisplayName");
             return displayName;
         }
 
         public String getPhotoThumbnailUri() {
+            trace("getPhotoThumbnailUri");
             return photoThumbnailUri;
         }
 
         public String getPhoneNumber() {
+            trace("getPhoneNumber");
             return phoneNumber;
         }
 
+        public String getLabel() {
+            trace("getLabel");
+            return label;
+        }
 
+        public String getLookupKey() {
+            trace("getLookupKey");
+            return lookupKey;
+        }
+
+        @Override
+        public String toString() {
+            trace("toString");
+            StringBuffer stringBuffer = new StringBuffer();
+            stringBuffer.append("------------");
+            stringBuffer.append("id = " + id + "\r\n");
+            stringBuffer.append("displayName = " + displayName + "\r\n");
+            stringBuffer.append("phoneNumber = " + phoneNumber + "\r\n");
+            stringBuffer.append("photoThumbnailUri = " + photoThumbnailUri + "\r\n");
+            stringBuffer.append("label = " + label + "\r\n");
+            stringBuffer.append("lookupKey = " + lookupKey + "\r\n");
+            stringBuffer.append("------------");
+
+
+            return stringBuffer.toString();
+        }
     }
 
 }
