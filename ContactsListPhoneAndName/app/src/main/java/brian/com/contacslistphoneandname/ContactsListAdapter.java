@@ -25,6 +25,10 @@ public class ContactsListAdapter extends BaseAdapter {
     public class Item {
 
         long id;
+        String displayName;
+        String phoneNumber;
+        String photoThumbnailUri;
+        String label;
         String lookupKey;
 
         public long getId() {
@@ -180,6 +184,7 @@ public class ContactsListAdapter extends BaseAdapter {
     }
 
     private Item toItem(int position, Cursor cursor) {
+        trace("toItem");
         cursor.moveToPosition(position);
 
         int idIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone._ID);
