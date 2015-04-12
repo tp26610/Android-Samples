@@ -18,9 +18,6 @@ import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-/**
- * Created by Yeh on 2015/3/20.
- */
 public class ContactsListAdapter extends CursorAdapter
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -136,6 +133,7 @@ public class ContactsListAdapter extends CursorAdapter
     }
 
     private void refreshUI(ViewHolder viewHolder, String displayName, String photoThumbnailUri) {
+        trace("refreshUI");
         viewHolder.tvDisplayName.setText(displayName);
         if(photoThumbnailUri != null) {
             viewHolder.ivPhoto.setImageURI(Uri.parse(photoThumbnailUri));
