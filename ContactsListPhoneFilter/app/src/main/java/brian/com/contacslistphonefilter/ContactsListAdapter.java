@@ -244,50 +244,50 @@ public class ContactsListAdapter extends BaseAdapter {
 
         @Override
         protected void onPreExecute() {
-            super.onPreExecute();
+            trace("onPreExecute");
             mapArray.clear();
             notifyDataSetChanged();
         }
 
         @Override
         protected Void doInBackground(String... params) {
-
+            trace("doInBackground");
             String filter = null;
             if(params != null && params.length > 0) {
                 filter = params[0];
             }
             Cursor cursor = queryContacts(filter);
 
-
-            boolean hasData = cursor.moveToFirst();
-
-            if(hasData == false) {
+            if(cursor == null) {
                 return null;
             }
 
             String preLookupKey = "";
-            do {
-                Item item = toItem(cursor);
-                if(preLookupKey.equals(item.getLookupKey())){
-                    continue;
-                }
-                preLookupKey = item.getLookupKey();
-                publishProgress(item);
-            } while(cursor.moveToNext());
+            boolean hasData = cursor.moveToFirst();
+            if(hasData)
+                do {
+                    Item item = toItem(cursor);
+                    if(preLookupKey.equals(item.getLookupKey())){
+                        continue;
+                    }
+                    preLookupKey = item.getLookupKey();
+                    publishProgress(item);
+                } while(cursor.moveToNext());
 
-
-
+            cursor.close();
             return null;
         }
 
         @Override
         protected void onProgressUpdate(Item... values) {
+            trace("onProgressUpdate");
             if(values != null) {
                 for(Item item : values) {
                     mapArray.add(item);
                 }
+                notifyDataSetChanged();
             }
-            notifyDataSetChanged();
+
         }
     }
 }
