@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,7 +23,7 @@ public class ContactsListAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
     private ContentResolver mResolver;
-    private List<Item> mapArray;
+    private List<Item> mapArray = new ArrayList<>();
 
     public class Item {
 
@@ -93,15 +94,10 @@ public class ContactsListAdapter extends BaseAdapter {
         mResolver = context.getContentResolver();
         mInflater = LayoutInflater.from(context);
 
-
-        long start = System.currentTimeMillis();
-        Cursor mCursor = queryContacts(null);
-        long spent = System.currentTimeMillis() - start;
-
-        mapArray = cursorToList(mCursor);
+        new PutMapTask().execute();
     }
 
-    private List<Item> cursorToList(Cursor mCursor) {
+    private List<Item> cursorToMapList(Cursor mCursor) {
         List<Item> mapArray = new ArrayList<>();
         String preLookupKey = "";
         boolean hasData = mCursor.moveToFirst();
@@ -240,8 +236,58 @@ public class ContactsListAdapter extends BaseAdapter {
 
     public void filter(String filterPhoneOrName) {
         trace("filterPhoneOrName");
-        Cursor mCursor = queryContacts(filterPhoneOrName);
-        mapArray = cursorToList(mCursor);
-        this.notifyDataSetChanged();
+        new PutMapTask().execute(filterPhoneOrName);
+    }
+
+    private class PutMapTask extends AsyncTask<String, Item, Void> {
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mapArray.clear();
+            notifyDataSetChanged();
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+
+            String filter = null;
+            if(params != null && params.length > 0) {
+                filter = params[0];
+            }
+            Cursor cursor = queryContacts(filter);
+
+
+            boolean hasData = cursor.moveToFirst();
+
+            if(hasData == false) {
+                return null;
+            }
+
+            String preLookupKey = "";
+            do {
+                Item item = toItem(cursor);
+                if(preLookupKey.equals(item.getLookupKey())){
+                    continue;
+                }
+                preLookupKey = item.getLookupKey();
+                publishProgress(item);
+            } while(cursor.moveToNext());
+
+
+
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Item... values) {
+            if(values != null) {
+                for(Item item : values) {
+                    mapArray.add(item);
+                }
+            }
+            notifyDataSetChanged();
+        }
     }
 }
