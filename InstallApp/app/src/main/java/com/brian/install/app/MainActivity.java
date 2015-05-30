@@ -33,8 +33,8 @@ public class MainActivity extends Activity {
 
     private void installApp(String appFileName) {
         Log.d("MainActivity", "installApp");
-//        File appFile = getFileStreamPath(appFileName);
-        File appFile = new File("/sdcard/" + appFileName);
+        File appFile = getFileStreamPath(appFileName);
+//        File appFile = new File("/sdcard/" + appFileName);
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(Uri.fromFile(appFile), "application/vnd.android.package-archive");
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -47,8 +47,8 @@ public class MainActivity extends Activity {
         InputStream in = null;
         OutputStream out = null;
         try {
-//            out = openFileOutput(fileName, Context.MODE_PRIVATE);
-            out = new FileOutputStream("/sdcard/" + fileName);
+            out = openFileOutput(fileName, Context.MODE_WORLD_READABLE);
+//            out = new FileOutputStream("/sdcard/" + fileName);
             in = getResources().openRawResource(R.raw.app);
             int size = in.available();
             Log.d("MainActivity", "size = " + size);
